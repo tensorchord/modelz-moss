@@ -59,7 +59,9 @@ RUN pip install -r requirements.txt
 
 RUN mkdir -p /workspace
 
-COPY main.py models workspace/
+COPY main.py workspace/
+
+COPY models workspace/
 
 WORKDIR /workspace
 
