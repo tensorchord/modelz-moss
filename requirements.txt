@@ -6,3 +6,4 @@ datasets
 accelerate
 matplotlib
 huggingface_hub
+mdtex2html
