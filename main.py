@@ -11,9 +11,9 @@ import os
 try:
     from transformers import MossForCausalLM, MossTokenizer
 except (ImportError, ModuleNotFoundError):
-    from models.modeling_moss import MossForCausalLM
-    from models.tokenization_moss import MossTokenizer
-    from models.configuration_moss import MossConfig
+    from .models.modeling_moss import MossForCausalLM
+    from .models.tokenization_moss import MossTokenizer
+    from .models.configuration_moss import MossConfig
 
 logger.setLevel("ERROR")
 warnings.filterwarnings("ignore")
