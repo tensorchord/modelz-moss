@@ -1,37 +1,21 @@
-from accelerate import init_empty_weights, load_checkpoint_and_dispatch
 from transformers.generation.utils import logger
-from huggingface_hub import snapshot_download
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import mdtex2html
 import gradio as gr
-import platform
 import warnings
 import torch
-import os
-
-try:
-    from transformers import MossForCausalLM, MossTokenizer
-except (ImportError, ModuleNotFoundError):
-    from models.modeling_moss import MossForCausalLM
-    from models.tokenization_moss import MossTokenizer
-    from models.configuration_moss import MossConfig
 
 logger.setLevel("ERROR")
 warnings.filterwarnings("ignore")
 
-model_path = "fnlp/moss-moon-003-sft"
-if not os.path.exists(model_path):
-    model_path = snapshot_download(model_path)
+# fix https://github.com/OpenLMLab/MOSS/issues/212
+import sys
+sys.path.append('/root/.cache/huggingface/modules')
 
+model_path = "fnlp/moss-moon-003-sft-int4"
 print("Waiting for all devices to be ready, it may take a few minutes...")
-config = MossConfig.from_pretrained(model_path)
-tokenizer = MossTokenizer.from_pretrained(model_path)
-
-with init_empty_weights():
-    raw_model = MossForCausalLM._from_config(config, torch_dtype=torch.float16)
-raw_model.tie_weights()
-model = load_checkpoint_and_dispatch(
-    raw_model, model_path, device_map="auto", no_split_module_classes=["MossBlock"], dtype=torch.float16
-)
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True).half().cuda()
 
 meta_instruction = \
     """You are an AI assistant whose name is MOSS.
