@@ -3,7 +3,7 @@ ARG base=nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04
 FROM ${base}
 
 ENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH /opt/conda/bin:/usr/local/cuda-11.6/compat:$PATH
 
 ARG GRADIO_SERVER_PORT=8080
 ENV GRADIO_SERVER_PORT=${GRADIO_SERVER_PORT}
@@ -13,6 +13,7 @@ ARG CONDA_VERSION=py310_22.11.1-1
 RUN apt update && \
     apt install -y --no-install-recommends \
         wget \
+        build-essential \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
@@ -60,8 +61,6 @@ RUN pip install -r requirements.txt
 RUN mkdir -p /workspace
 
 COPY main.py workspace/
-
-COPY models workspace/
 
 WORKDIR /workspace
 
