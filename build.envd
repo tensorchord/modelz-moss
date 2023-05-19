@@ -1,0 +1,17 @@
+# syntax=v1
+
+def basic():
+    install.cuda(version="11.6.2")
+    install.python()
+    install.python_packages(requirements="requirements.txt")
+    install.apt_packages(name=["wget", "build-essential", "ca-certificates"])
+    io.copy("main.py", "/")
+
+def build_dev():
+    base(dev=True)
+    basic()
+    runtime.expose(envd_port=8000, host_port=8000, service="sd")
+
+def build():
+    basic()
+    config.entrypoint(["python", "main.py"])
